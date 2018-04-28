@@ -2,6 +2,19 @@
 <html>
 <head>
 	<title>Home</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+	<style type="text/css">
+		input[type="range"]{
+			width: 100%;
+		}
+		.btn{ width: 100%; }
+		.col-lg-12{ margin-bottom: 10px; }
+	</style>
 </head>
 
 <script type="text/javascript">
@@ -9,17 +22,77 @@
 </script>
 
 <body>
-	<input type="range" min="0" max="255" value="0" id="ledR" oninput="Action()">
-	<input type="range" min="0" max="255" value="0" id="ledG" oninput="Action()">
-	<input type="range" min="0" max="255" value="0" id="ledB" oninput="Action()">
 
-	<button onmousedown="Action(0,1);Action(2,1)" onmouseup="Action(0,0);Action(2,0)">Forward</button>
-	<button onmousedown="Action(1,1);Action(3,1)" onmouseup="Action(1,0);Action(3,0)">Backward</button>
-	<button onmousedown="Action(0,1);" onmouseup="Action(0,0)">Forward-Left</button>
-	<button onmousedown="Action(2,1);" onmouseup="Action(2,0)">Forward-Right</button>
-	<button onmousedown="Action(1,1);" onmouseup="Action(1,0)">Back-Left</button>
-	<button onmousedown="Action(3,1);" onmouseup="Action(3,0)">Back-Right</button>
+	<div class="container">
+		<h1>IOT Car Controller</h1>
 
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">Condition</div>
+					<div class="card-body">
+						<div class="row">
+							<div class="col-sm-3" style="text-align: right;"><p>Temperature</p></div>
+							<div class="col-sm-3"><p id="temp">{{temp}} °c</p></div>
+							<div class="col-sm-3" style="text-align: right;"><p>Humidity</p></div>
+							<div class="col-sm-3"><p id="humi">{{humi}} %</p></div>
+						</div>
+					</div> 
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">LED</div>
+					<div class="card-body">
+						<div class="row">
+							<div class="col-sm-2"><p>Red</p></div>
+							<div class="col-sm-8"><input type="range" min="0" max="255" value="{{ledR}}" id="ledR" oninput="Action()"></div>
+							<div class="col-sm-2"><p id="ledRlabel">0 %</p></div>
+						</div>
+						<div class="row">
+							<div class="col-sm-2"><p>Green</p></div>
+							<div class="col-sm-8"><input type="range" min="0" max="255" value="{{ledG}}" id="ledG" oninput="Action()"></div>
+							<div class="col-sm-2"><p id="ledGlabel">0 %</p></div>
+						</div>
+						<div class="row">
+							<div class="col-sm-2"><p>Blue</p></div>
+							<div class="col-sm-8"><input type="range" min="0" max="255" value="{{ledB}}" id="ledB" oninput="Action()"></div>
+							<div class="col-sm-2"><p id="ledBlabel">0 %</p></div>
+						</div>
+					</div> 
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">Movement - Manual</div>
+					<div class="card-body">
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,1);Action(2,1)" onmouseup="Action(0,0);Action(2,0)">Forward</button></div>
+							<div class="col-sm-4"></div>
+						</div>
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,1);" onmouseup="Action(0,0)">F-Left</button></div>
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(2,1);" onmouseup="Action(2,0)">F-Right</button></div>
+						</div>
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(1,1);" onmouseup="Action(1,0)">B-Left</button></div>
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(3,1);" onmouseup="Action(3,0)">B-Right</button></div>
+						</div>
+						<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(1,1);Action(3,1)" onmouseup="Action(1,0);Action(3,0)">Backward</button></div>
+							<div class="col-sm-4"></div>
+						</div>
+					</div> 
+				</div>
+			</div>
+			
+		</div>
+	</div>
 
 </body>
 
@@ -28,6 +101,7 @@
 <script type="text/javascript">
 	var socket =io();
 
+	ledUpdateLabel()
 
 	function Action(motor,mvalue){
 		Motor[motor] = mvalue;
@@ -41,7 +115,27 @@
        		document.getElementById("ledB").value;
        	socket.emit('updates', output);
        	console.log(output);
+
+       	ledUpdateLabel()
 	}
+	function ledUpdateLabel(){
+		let ledR = document.getElementById("ledR").value
+		let ledG = document.getElementById("ledG").value
+		let ledB = document.getElementById("ledB").value
+		document.getElementById('ledRlabel').innerHTML = parseInt(ledR/255*100)+" %"
+       	document.getElementById('ledGlabel').innerHTML = parseInt(ledG/255*100)+" %"
+       	document.getElementById('ledBlabel').innerHTML = parseInt(ledB/255*100)+" %"
+	}
+
+	socket.on('status', function(msg){
+		var obj = JSON.parse(msg);
+		document.getElementById('temp').innerHTML = obj['temp'] + " °c"
+		document.getElementById('humi').innerHTML = obj['humi'] + " %"
+		document.getElementById("ledR").value = obj['led']['r']
+		document.getElementById("ledG").value = obj['led']['g']
+		document.getElementById("ledB").value = obj['led']['b']
+		ledUpdateLabel()
+    });
 </script>
 
 </html>

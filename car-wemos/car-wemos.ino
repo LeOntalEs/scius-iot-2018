@@ -86,8 +86,13 @@ void setup(){
 void loop() {
   ArduinoOTA.handle();
 
+  int temp = int(dht.readTemperature());
+  int humi = int(dht.readHumidity());
+
+  String url = "http://192.168.1.9:5000/?temp="+String(temp)+"&humi="+String(humi);
+
   HTTPClient http;
-  http.begin("http://192.168.1.9:5000/");
+  http.begin(url);
   int httpCode = http.GET();
   if(httpCode > 0) {
     Serial.printf("[HTTP] GET... code: %d\n", httpCode);

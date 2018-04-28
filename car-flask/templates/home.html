@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home</title>
+</head>
+
+<script type="text/javascript">
+	var Motor = [0,0,0,0]
+</script>
+
+<body>
+	<input type="range" min="0" max="255" value="0" id="ledR" oninput="Action()">
+	<input type="range" min="0" max="255" value="0" id="ledG" oninput="Action()">
+	<input type="range" min="0" max="255" value="0" id="ledB" oninput="Action()">
+
+	<button onmousedown="Action(0,1);Action(2,1)" onmouseup="Action(0,0);Action(2,0)">Forward</button>
+	<button onmousedown="Action(1,1);Action(3,1)" onmouseup="Action(1,0);Action(3,0)">Backward</button>
+	<button onmousedown="Action(0,1);" onmouseup="Action(0,0)">Forward-Left</button>
+	<button onmousedown="Action(2,1);" onmouseup="Action(2,0)">Forward-Right</button>
+	<button onmousedown="Action(1,1);" onmouseup="Action(1,0)">Back-Left</button>
+	<button onmousedown="Action(3,1);" onmouseup="Action(3,0)">Back-Right</button>
+
+
+</body>
+
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script type="text/javascript">
+	var socket =io();
+
+
+	function Action(motor,mvalue){
+		Motor[motor] = mvalue;
+		let output = 
+       		String(Motor[0])+','+
+       		String(Motor[1])+','+
+       		String(Motor[2])+','+
+       		String(Motor[3])+','+
+       		document.getElementById("ledR").value+','+
+       		document.getElementById("ledG").value+','+
+       		document.getElementById("ledB").value;
+       	socket.emit('updates', output);
+       	console.log(output);
+	}
+</script>
+
+</html>

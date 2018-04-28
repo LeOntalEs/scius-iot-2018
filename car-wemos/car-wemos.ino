@@ -22,6 +22,12 @@ void led(int r,int g,int b){
   pixels.show();
 }
 
+// MARK : DHT
+#include "DHT.h"
+#define DHTPIN pin[6]
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
 void setup(){
   // MARK : Motor
   pinMode(pin[1],OUTPUT);
@@ -39,6 +45,9 @@ void setup(){
 
   // MARK : Neopixel LED
   pixels.begin();
+
+  // MARK : DHT
+  dht.begin();
 
   Serial.begin(115200);
   Serial.println("WiFi connected");  

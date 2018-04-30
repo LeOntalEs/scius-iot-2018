@@ -55,7 +55,7 @@ void setup(){
   Serial.println(WiFi.localIP());
 
   // MARK : OTA
-  ArduinoOTA.setHostname("WEMOS1");
+  ArduinoOTA.setHostname("WEMOS0");
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH)
@@ -89,7 +89,7 @@ void loop() {
   int temp = int(dht.readTemperature());
   int humi = int(dht.readHumidity());
 
-  String url = "http://192.168.1.9:5000/?temp="+String(temp)+"&humi="+String(humi);
+  String url = "http://192.168.1.4:5000/?temp="+String(temp)+"&humi="+String(humi);
 
   HTTPClient http;
   http.begin(url);
@@ -97,20 +97,36 @@ void loop() {
   if(httpCode > 0) {
     Serial.printf("[HTTP] GET... code: %d\n", httpCode);
     if(httpCode == HTTP_CODE_OK) {
-       String raw = http.getString();
-       Serial.println("[DATA] "+raw);
-       int m0 = raw.substring(0,1).toInt();
-       int m1 = raw.substring(1,2).toInt();
-       int m2 = raw.substring(2,3).toInt();
-       int m3 = raw.substring(3,4).toInt();
-       int ledR = raw.substring(4,7).toInt();
-       int ledG = raw.substring(7,10).toInt();
-       int ledB = raw.substring(10,13).toInt();
-       led(ledR,ledG,ledB);
-       digitalWrite(pin[1],m0);
-       digitalWrite(pin[2],m1);
-       digitalWrite(pin[3],m2);
-       digitalWrite(pin[4],m3);
+      String raw = http.getString(); // MOTOR 000 000 000 000 LED 000 000 000 SOUND 0000 0 
+      Serial.println("[DATA] "+raw);
+      int m0 = raw.substring(0,3).toInt();
+      int m1 = raw.substring(3,6).toInt();
+      int m2 = raw.substring(6,9).toInt();
+      int m3 = raw.substring(9,12).toInt();
+      int ledR = raw.substring(12,15).toInt();
+      int ledG = raw.substring(15,18).toInt();
+      int ledB = raw.substring(18,21).toInt();
+      led(ledR,ledG,ledB);
+
+      /*
+      digitalWrite(pin[4],m0);
+      digitalWrite(pin[3],m1);
+      digitalWrite(pin[2],m2);
+      digitalWrite(pin[1],m3); */
+
+      analogWrite(pin[4],m0);
+      analogWrite(pin[3],m1);
+      analogWrite(pin[2],m2);
+      analogWrite(pin[1],m3);
+
+      int melody = raw.substring(21,25).toInt();
+      int noteDuration = raw.substring(25,26).toInt();
+      if(melody != 0){
+        tone(pin[7], melody, (1000/noteDuration));
+        int pauseBetweenNotes = (1000/noteDuration);// * 1.30;
+        delay(pauseBetweenNotes);
+        noTone(pin[7]);
+      }
     }
   } else {
     Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());

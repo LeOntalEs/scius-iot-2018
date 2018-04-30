@@ -14,12 +14,9 @@
 		}
 		.btn{ width: 100%; }
 		.col-lg-12{ margin-bottom: 10px; }
+		.preview{ border-radius: 6px; height: 100%; border-style: solid; border-width: 1px; border-color: #d1d1d1; }
 	</style>
 </head>
-
-<script type="text/javascript">
-	var Motor = [0,0,0,0]
-</script>
 
 <body>
 
@@ -31,12 +28,18 @@
 			<div class="col-lg-12">
 				<div class="card">
 					<div class="card-header">Condition</div>
-					<div class="card-body">
+					<div class="card-body" style="text-align: center;">
 						<div class="row">
-							<div class="col-sm-3" style="text-align: right;"><p>Temperature</p></div>
+							<div class="col-sm-3"><p>Temperature</p></div>
+							<div class="col-sm-3"><p>Humidity</p></div>
+							<div class="col-sm-3"><p>At</p></div>
+							<div class="col-sm-3"><p>Frequency</p></div>
+						</div>
+						<div class="row">
 							<div class="col-sm-3"><p id="temp">{{temp}} °c</p></div>
-							<div class="col-sm-3" style="text-align: right;"><p>Humidity</p></div>
 							<div class="col-sm-3"><p id="humi">{{humi}} %</p></div>
+							<div class="col-sm-3"><p id="date"></p></div>
+							<div class="col-sm-3"><p id="hz"></p></div>
 						</div>
 					</div> 
 				</div>
@@ -46,19 +49,48 @@
 					<div class="card-header">LED</div>
 					<div class="card-body">
 						<div class="row">
-							<div class="col-sm-2"><p>Red</p></div>
-							<div class="col-sm-8"><input type="range" min="0" max="255" value="{{ledR}}" id="ledR" oninput="Action()"></div>
-							<div class="col-sm-2"><p id="ledRlabel">0 %</p></div>
+							<div class="col-sm-10">
+								<div class="row">
+									<div class="col-sm-2"><p>Red</p></div>
+									<div class="col-sm-9"><input type="range" min="0" max="255" value="{{ledR}}" id="ledR" oninput="send()"></div>
+									<div class="col-sm-1"><p id="ledRlabel">0 %</p></div>
+								</div>
+								<div class="row">
+									<div class="col-sm-2"><p>Green</p></div>
+									<div class="col-sm-9"><input type="range" min="0" max="255" value="{{ledG}}" id="ledG" oninput="send()"></div>
+									<div class="col-sm-1"><p id="ledGlabel">0 %</p></div>
+								</div>
+								<div class="row">
+									<div class="col-sm-2"><p>Blue</p></div>
+									<div class="col-sm-9"><input type="range" min="0" max="255" value="{{ledB}}" id="ledB" oninput="send()"></div>
+									<div class="col-sm-1"><p id="ledBlabel">0 %</p></div>
+								</div>
+							</div>
+							<div class="col-sm-2" style="margin-bottom: 20px;">
+								<div id="previewer" class="preview" style="background-color: #000;"></div>
+							</div>
 						</div>
-						<div class="row">
-							<div class="col-sm-2"><p>Green</p></div>
-							<div class="col-sm-8"><input type="range" min="0" max="255" value="{{ledG}}" id="ledG" oninput="Action()"></div>
-							<div class="col-sm-2"><p id="ledGlabel">0 %</p></div>
+					</div> 
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">Movement - Button</div>
+					<div class="card-body">
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,999,0,999);" onmouseup="Action(0,0,0,0);" ontouchstart="Action(0,999,0,999);" ontouchend="Action(0,0,0,0);">Forward</button></div>
+							<div class="col-sm-4"></div>
 						</div>
-						<div class="row">
-							<div class="col-sm-2"><p>Blue</p></div>
-							<div class="col-sm-8"><input type="range" min="0" max="255" value="{{ledB}}" id="ledB" oninput="Action()"></div>
-							<div class="col-sm-2"><p id="ledBlabel">0 %</p></div>
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,999,999,0);" onmouseup="Action(0,0,0,0)" ontouchstart="Action(0,999,999,0);" ontouchend="Action(0,0,0,0);">Left</button></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,0,0,0);" onmouseup="Action(0,0,0,0)" ontouchstart="Action(0,0,0,0);" ontouchend="Action(0,0,0,0);">Stop</button></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(999,0,0,999);" onmouseup="Action(0,0,0,0)" ontouchstart="Action(999,0,0,999);" ontouchend="Action(0,0,0,0);">Right</button></div>
+						</div>
+						<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(999,0,999,0);" onmouseup="Action(0,0,0,0);" ontouchstart="Action(999,0,999,0);" ontouchend="Action(0,0,0,0);">Backward</button></div>
+							<div class="col-sm-4"></div>
 						</div>
 					</div> 
 				</div>
@@ -68,24 +100,32 @@
 					<div class="card-header">Movement - Manual</div>
 					<div class="card-body">
 						<div class="row" style="margin-top: 10px;">
-							<div class="col-sm-4"></div>
-							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,1);Action(2,1)" onmouseup="Action(0,0);Action(2,0)">Forward</button></div>
-							<div class="col-sm-4"></div>
+							<div class="col-sm-2">Forward</div>
+							<div class="col-sm-8"><input type="range" min="0" max="999" value="0" id="ledR" oninput="Action(0,this.value,0,this.value); document.getElementById('forwardm').innerHTML = this.value; "></div>
+							<div class="col-sm-2"><p id="forwardm">0</p></div>
 						</div>
+					</div> 
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">Movement - Gyro</div>
+					<div class="card-body">
 						<div class="row" style="margin-top: 10px;">
-							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,1);" onmouseup="Action(0,0)">F-Left</button></div>
-							<div class="col-sm-4"></div>
-							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(2,1);" onmouseup="Action(2,0)">F-Right</button></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" style="height: 80px;" id="gyroswitch" ontouchstart="gyroEnable = !gyroEnable; this.innerHTML = (gyroEnable ? 'Enable':'Disable')">Disable</button></div>
+							<div class="col-sm-8"><p id="motion" style="line-height: 80px;">Not Support</p></div>
 						</div>
-						<div class="row" style="margin-top: 10px;">
-							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(1,1);" onmouseup="Action(1,0)">B-Left</button></div>
-							<div class="col-sm-4"></div>
-							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(3,1);" onmouseup="Action(3,0)">B-Right</button></div>
-						</div>
-						<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
-							<div class="col-sm-4"></div>
-							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(1,1);Action(3,1)" onmouseup="Action(1,0);Action(3,0)">Backward</button></div>
-							<div class="col-sm-4"></div>
+					</div> 
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">Sound</div>
+					<div class="card-body">
+						<div class="row">
+							<div class="col-sm-2"><p id="melodynow"></p></div>
+							<div class="col-sm-6"><input class="form-control" type="text" name="" id="melody" style="width: 100%"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onclick="setMeloduy()">SEND</button></div>
 						</div>
 					</div> 
 				</div>
@@ -100,11 +140,20 @@
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script type="text/javascript">
 	var socket =io();
+	var Motor = [0,0,0,0]
+	var Melody = ""
 
 	ledUpdateLabel()
 
-	function Action(motor,mvalue){
-		Motor[motor] = mvalue;
+	function Action(m0,m1,m2,m3){
+		Motor[0] = m0
+		Motor[1] = m1
+		Motor[2] = m2
+		Motor[3] = m3		
+		send()
+       	ledUpdateLabel()
+	}
+	function send(){
 		let output = 
        		String(Motor[0])+','+
        		String(Motor[1])+','+
@@ -112,11 +161,15 @@
        		String(Motor[3])+','+
        		document.getElementById("ledR").value+','+
        		document.getElementById("ledG").value+','+
-       		document.getElementById("ledB").value;
+       		document.getElementById("ledB").value+','+
+       		Melody;
        	socket.emit('updates', output);
        	console.log(output);
-
-       	ledUpdateLabel()
+	}
+	function setMeloduy(){
+		Melody = document.getElementById('melody').value
+		if( Melody == "" ) Melody = "0"
+		send()
 	}
 	function ledUpdateLabel(){
 		let ledR = document.getElementById("ledR").value
@@ -125,6 +178,22 @@
 		document.getElementById('ledRlabel').innerHTML = parseInt(ledR/255*100)+" %"
        	document.getElementById('ledGlabel').innerHTML = parseInt(ledG/255*100)+" %"
        	document.getElementById('ledBlabel').innerHTML = parseInt(ledB/255*100)+" %"
+       	document.getElementById('previewer').style.backgroundColor = "rgb("+ledR+","+ledG+","+ledB+")"
+	}
+
+	var gyroEnable = false
+	window.addEventListener("deviceorientation", handleMotion, true);
+	function handleMotion(){
+		if(gyroEnable){
+			var A = event.beta
+			var B = event.gamma
+			document.getElementById('motion').innerHTML = String(event.beta.toFixed(2))+" | "+String(event.gamma.toFixed(2))
+			if(B > 0 && B < 60) Action(0,999,0,999)//Action(0,500+(90-parseInt(B))*(400/90),0,500+(90-parseInt(B))*(400/90));//Action(0,400+(90-B)*(400/90),0,400+(90-B)*(400/90));
+			else if(B < 0 && B > -70) Action(999,0,999,0);
+			else if(A > 40) Action(0,999,999,0);
+			//else if(A < -40) Action(999,0,0,999);
+			else Action(0,0,0,0);
+		}
 	}
 
 	socket.on('status', function(msg){
@@ -134,8 +203,23 @@
 		document.getElementById("ledR").value = obj['led']['r']
 		document.getElementById("ledG").value = obj['led']['g']
 		document.getElementById("ledB").value = obj['led']['b']
+		document.getElementById("melodynow").innerHTML = obj['sound']['melodykey']
+
+		var now =  new Date()
+		document.getElementById("date").innerHTML = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds()+"."+now.getMilliseconds()
 		ledUpdateLabel()
+
+		hzcounter += 1;
     });
+
+	var hzcounter = 0;
+    var time = setInterval(function(){
+            document.getElementById('hz').innerHTML = hzcounter+" Hz"; 
+            hzcounter = 0;
+        },1000);
+
+
+
 </script>
 
 </html>

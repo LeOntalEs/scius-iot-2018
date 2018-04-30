@@ -44,27 +44,35 @@ def sounds(notes):
 
 def goto(x,y):
 	targetDirection = math.atan(y/x)
-	if targetDirection < Data['location']['direction']:
-		turnright()
-	elif targetDirection > Data['location']['direction']:
-		turnleft()
+	# if targetDirection < Data['location']['direction']:
+	# 	turnright()
+	# elif targetDirection > Data['location']['direction']:
+	# 	turnleft()
+	# else:
+	# 	if x != Data['location']['x'] or y != Data['location']['y']:
+	# 		forward()
+	# 	else:
+	# 		stop()
+
+def motor(L,R): # L,R is (Int) -999 to 999
+	if L < 0:
+		Data['motor'][0] = 0
+		Data['motor'][1] = -L
 	else:
-		if x != Data['location']['x'] or y != Data['location']['y']:
-			forward()
-		else:
-			stop()
+		Data['motor'][0] = L
+		Data['motor'][1] = 0
+	if R < 0:
+		Data['motor'][2] = 0
+		Data['motor'][3] = -L
+	else:
+		Data['motor'][2] = L
+		Data['motor'][3] = 0
 
-def turnleft():
-	pass
-def turnright():
-	pass
-def forward():
-	pass
-def backward():
-	pass
-def stop():
-	pass
-
+def humi():
+	return Data['humi']
+def temp():
+	return Data['temp']
+	
 # MARK : Server Service
 @app.route('/')
 def home():

@@ -1,4 +1,5 @@
 import json
+from time import sleep
 from collections import OrderedDict
 
 import cv2
@@ -51,55 +52,55 @@ def detect_circle(img):
     return circles
 
 def get_all_color(cap):
-    _, img = cap.read()
-    timg = img.copy()
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    gimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 1, 20,
-                                param1=40, param2=25, minRadius=5, maxRadius=50)[0]
-    all_code = list()
-    all_colors = list()
-    for i in circles:
-        x, y = i[0], i[1]
-        cv2.circle(timg, (i[0], i[1]), i[2], (255, 255, 0), 2)
-        cv2.circle(timg, (i[0], i[1]), 2, (255, 255, 0), 2, 3)
-        y, x = int(y), int(x)
-        # code = norm_color(hsv[y, x, 0:3:2])
-        code = norm_color(hsv[y, x, 0])
-        if not code in all_code:
-            all_code.append(code)
-            all_colors.append(tuple(hsv[y, x]))
-
-    cv2.imshow('img', timg)
     while True:
+        _, img = cap.read()
+        timg = img.copy()
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        gimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 1, 20,
+                                    param1=40, param2=25, minRadius=5, maxRadius=50)[0]
+        all_code = list()
+        all_colors = list()
+        for i in circles:
+            x, y = i[0], i[1]
+            cv2.circle(timg, (i[0], i[1]), i[2], (255, 255, 0), 2)
+            cv2.circle(timg, (i[0], i[1]), 2, (255, 255, 0), 2, 3)
+            y, x = int(y), int(x)
+            # code = norm_color(hsv[y, x, 0:3:2])
+            code = norm_color(hsv[y, x, 0])
+            if not code in all_code:
+                all_code.append(code)
+                all_colors.append(tuple(hsv[y, x]))
+
+        cv2.imshow('img', timg)
         if cv2.waitKey(10) & 0xFF == ord('q'):
             break
+        # sleep(3)
             
     return all_code, all_colors
 
 if  __name__ == '__main__':
     cap = None
     try:
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(1)
         # 
         # 1. Run this to get all centriod color 
         #       then, set to ALL COLOR 
         # 
-        # codes, colors = get_all_color(cap)
-        # for z in zip(codes, colors):
-        #     print(z)
-        # print(sorted(codes))
+        codes, colors = get_all_color(cap)
+        for z in zip(codes, colors):
+            print(z)
+        print(sorted(codes))
         codes = ALL_COLORS
         codes = [30, 65, 105, 160]
-        
+        # [4, 64, 107, 110, 166]
+
         # 
         # 2. generate cindex.json
         # 
-        k, idxs = combi(codes)
-        # print(k)
-        with open('testindex.json', 'w+') as fp:
-            json.dump(k, fp, indent=2)
-        # print(idxs)
+        # k, idxs = combi(codes)
+        # with open('testindex.json', 'w+') as fp:
+        #     json.dump(k, fp, indent=2)
     finally:
         cv2.destroyAllWindows()
         if cap:

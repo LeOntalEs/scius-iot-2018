@@ -1,6 +1,5 @@
 from turtle import *
 color('red', 'yellow')
-begin_fill()
 
 def tri(size):
     for i in range(3):
@@ -8,6 +7,5 @@ def tri(size):
         right(120)
 
 tri(150)
-end_fill()
 
 exitonclick()

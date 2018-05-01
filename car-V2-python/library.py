@@ -9,8 +9,8 @@ import math
 from time import sleep # sleep(second)
 
 ##### EDIT HEAR #####
-ID = '0'
-secret = '0000'
+ID = '0'				# Your ID
+secret = '0'			# Your Secret
 #####################
 
 isPrintAction = True
@@ -174,7 +174,7 @@ def onsensor():
 	upload()
 
 # MARK : Server Service
-locationHostIP = "192.168.1.4:5000"
+locationHostIP = "192.168.1.99:8000"
 def requestServer(path):
 	connection = http.client.HTTPConnection(locationHostIP)
 	connection.request("GET",path)

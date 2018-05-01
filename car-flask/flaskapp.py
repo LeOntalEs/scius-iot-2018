@@ -119,3 +119,4 @@ def message(message):
 def update():
 	socketio.emit('status', json.dumps(Data) , broadcast=True)
 
+app.route('/epoch')

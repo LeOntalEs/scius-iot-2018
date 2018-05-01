@@ -125,7 +125,7 @@
 						<div class="row">
 							<div class="col-sm-2"><p id="melodynow"></p></div>
 							<div class="col-sm-6"><input class="form-control" type="text" name="" id="melody" style="width: 100%"></div>
-							<div class="col-sm-4"><button class="btn btn-secondary" onclick="setMeloduy()">SEND</button></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onclick="setMelody()">SEND</button></div>
 						</div>
 					</div> 
 				</div>
@@ -144,6 +144,7 @@
 	var Melody = ""
 
 	ledUpdateLabel()
+	setMelody()
 
 	function Action(m0,m1,m2,m3){
 		Motor[0] = m0
@@ -166,7 +167,7 @@
        	socket.emit('updates', output);
        	console.log(output);
 	}
-	function setMeloduy(){
+	function setMelody(){
 		Melody = document.getElementById('melody').value
 		if( Melody == "" ) Melody = "0"
 		send()

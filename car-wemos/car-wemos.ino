@@ -5,8 +5,8 @@ int pin[] = {16,5,4,0,2,14,12,13,15};
 #include <WiFiClient.h> 
 #include <ESP8266WebServer.h>
 ESP8266WebServer server(80);
-const char *ssid = "ois";
-const char *password = "ilovestudy";
+const char *ssid = "iot2";
+const char *password = "12345678";
 #include <ESP8266HTTPClient.h>
 
 // MARK : OTA
@@ -89,7 +89,7 @@ void loop() {
   int temp = int(dht.readTemperature());
   int humi = int(dht.readHumidity());
 
-  String url = "http://192.168.1.4:5000/?temp="+String(temp)+"&humi="+String(humi);
+  String url = "http://192.168.137.1:5000/?temp="+String(temp)+"&humi="+String(humi);
 
   HTTPClient http;
   http.begin(url);

@@ -1,6 +1,7 @@
 import json
 from time import time, sleep
 import threading
+import traceback
 
 import cv2
 import numpy as np
@@ -22,6 +23,7 @@ master = None
 with open('testindex.json', 'r') as fp:
     colormap = json.load(fp)
 
+
 class Master:
     class __Master(threading.Thread):
         def __init__(self, bot_ids=None, cap=None):
@@ -33,7 +35,8 @@ class Master:
             self.max_alloc = 2
             self.nbots = len(bot_ids)
             self.bot_ids = bot_ids
-            self.latest_state = {x: self.get_init_status(x) for x in self.bot_ids}
+            self.latest_state = {
+                x: self.get_init_status(x) for x in self.bot_ids}
             self.missing = {x: 0 for x in self.bot_ids}
             self.infos = [None for _ in range(self.max_alloc)]
             threading.Thread.__init__(self)
@@ -50,7 +53,7 @@ class Master:
                 'x': -1,
                 'y': -1,
                 'theta': -1,
-            } 
+            }
 
         def get_info(self):
             return self.infos[self.currentidx]
@@ -72,7 +75,7 @@ class Master:
                     gimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     # 20
                     circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 1, 20,
-                                            param1=40, param2=25, minRadius=2, maxRadius=50)[0]
+                                               param1=40, param2=25, minRadius=2, maxRadius=50)[0]
                     for i in circles:
                         cv2.circle(timg, (i[0], i[1]), i[2], (255, 255, 0), 2)
                         cv2.circle(timg, (i[0], i[1]), 2, (255, 255, 0), 2, 3)
@@ -95,15 +98,17 @@ class Master:
                         for bot in bots:
                             if bot.contain(x, y, r, c):
                                 break
-                    # 
+                    #
                     # remove unacceptable bot
-                    # 
+                    #
+
                     def acceptable(bot): return len(bot.codes) > 3
                     bots = [bot for bot in bots if acceptable(bot)]
 
                     ubots = list()
                     unknown = set(self.bot_ids[:])
-                    context = {x: self.get_init_status(x) for x in self.bot_ids}
+                    context = {x: self.get_init_status(
+                        x) for x in self.bot_ids}
                     for bot in bots:
                         bot.process()
                         if (not bot.id is None) and (bot.id in self.bot_ids):
@@ -112,9 +117,9 @@ class Master:
                             self.missing[bot.id] = 0
                         else:
                             ubots.append(bot)
-                    # 
+                    #
                     # find nearly to assiment unknow bot
-                    # 
+                    #
                     def determine_exit(idx):
                         self.missing[idx] += 1
                         if self.missing[idx] > MISSING_OFFSET:
@@ -139,35 +144,39 @@ class Master:
                             for idx in lst:
                                 context[idx] = self.latest_state[idx]
 
-                        # print(unknown, ubots)
-                        # print(len(ubots) == len(unknown))
-                        # for idx in unknown:
-                        #     print(idx)
-                        #     context[idx] = self.latest_state[idx]
-                        # print(context)
-                        # print()
-                    # for k, v in context.items():
-                    #     if v['theta'] is None:
-                    #         v['theta'] = -1
-                    #     print(v['id'], v['x'], v['y'], int(v['theta']))
-                    # print()
-
+                    for bot in bots:
+                        if not bot.id:
+                            continue
+                        latest = self.latest_state[bot.id]
+                        element = context[bot.id]
+                        if (element['theta'] is None) and (not latest['theta'] is None):
+                            element['theta'] = latest['theta']
+                        if (element['x'] is None) and (not latest['x'] is None):
+                            element['x'] = latest['x']
+                        if (element['y'] is None) and (not latest['y'] is None):
+                            element['y'] = latest['y']
                     self.latest_state = context
                     self.infos[self.currentidx] = context
-                    # print(self.infos)
-                    # print(self.currentidx)
+
+                    for info in self.infos[self.currentidx]:
+                        val = self.infos[self.currentidx][info]
+                        print(val['id'], val['x'], val['y'], val['theta'])
+                    print()
+
                     self.currentidx = (self.currentidx+1) % self.max_alloc
                     self.bots = bots
                     # print()
                     # print('bot count: ', len(self.bots))
                     # print(time()-start)
                 except Exception as err:
-                    print(err)
+                    pass
+                    # print('from Master Error: ', err, type(err))
+                    # print(traceback.format_exc())
 
     instance = None
+
     def __init__(self, bot_ids=None, cap=None):
         if not Master.instance:
-            print(Master.instance)
             Master.instance = Master.__Master(bot_ids=bot_ids, cap=cap)
             Master.instance.start()
         else:
@@ -213,10 +222,10 @@ class Bot:
         norm_color = self.norm_color(color)
         d = [(abs(norm_color-c), c) for c in ALL_COLORS]
         return min(d, key=lambda x: x[0])[1]
-    
+
     def norm_color(self, arr):
         return arr
-    
+
     def sse(self, arr):
         avg = np.mean(arr)
         return int(np.sum(np.square(arr-avg)))

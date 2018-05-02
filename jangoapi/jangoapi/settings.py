@@ -28,13 +28,15 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+# LOGGING = {
+#     'version': 1,
+#     'requests': {
+#         'level': 'WARNING',
+#     },
+# }
+
 # Application definition
-LOGGING = {
-    'version': 1,
-    'requests': {
-        'level': 'WARNING',
-    },
-}
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

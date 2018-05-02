@@ -1,6 +1,7 @@
 util/
 api/img
 playground/img
+stud_secret.memo
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

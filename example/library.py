@@ -12,11 +12,11 @@ from melody import Melody
 
 
 ##### EDIT HEAR #####
-ID = '18'
-secret = '18'
+ID = '5'
+secret = '1234'
 #####################
 # MARK : Server Service
-locationHostIP = "192.168.1.14:5000"
+locationHostIP = "192.168.1.11:5000"
 
 isPrintAction = True
 

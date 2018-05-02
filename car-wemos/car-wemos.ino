@@ -1,12 +1,12 @@
 int pin[] = {16, 5, 4, 0, 2, 14, 12, 13, 15};
 
 //===================================
-int ID = 14;
+int ID = 15;
 //===================================
-const char *ssid = "ois";
-const char *password = "ilovestudy";
+const char *ssid = "15";
+const char *password = "12345678";
 //===================================
-String serverAddress = "192.168.1.4:8000";
+String serverAddress = "192.168.137.1:5000";
 //===================================
 
 // MARK : Wifi
@@ -98,7 +98,7 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
-
+  
   if(dhtEnable){
     temp = int(dht.readTemperature());
     humi = int(dht.readHumidity());
@@ -146,6 +146,6 @@ void loop() {
   }
   http.end();
 
-  delay(100);
+//  delay(100);
 }
 

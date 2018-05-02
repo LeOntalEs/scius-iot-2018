@@ -89,7 +89,7 @@ def getcmd(idx=None, temp=None, humi=None):
         own_status['temp'] = temp
     if humi:
         own_status['humi'] = humi
-    return buffer[sync.current_idx]
+    return buffer[INSTRUCTION_IDX]
 
 
 @app.route("/getstatus/")
@@ -104,4 +104,5 @@ def getstatus():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True, threaded=True)
+    app.run(host='0.0.0.0', threaded=True)
+    # app.run(host='0.0.0.0')

@@ -2,7 +2,7 @@ from time import sleep
 import library as car
 
 try:
-    threshold = 60
+    threshold = 70
     car.onsensor()
     while True:
         car.update()

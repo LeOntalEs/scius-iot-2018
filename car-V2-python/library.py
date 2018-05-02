@@ -9,8 +9,8 @@ import math
 from time import sleep # sleep(second)
 
 ##### EDIT HEAR #####
-ID = '0'				# Your ID
-secret = '0'			# Your Secret
+ID = '18'				# Your ID
+secret = '18'			# Your Secret
 #####################
 
 isPrintAction = True

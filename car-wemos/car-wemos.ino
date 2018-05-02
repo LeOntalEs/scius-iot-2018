@@ -1,12 +1,12 @@
 int pin[] = {16, 5, 4, 0, 2, 14, 12, 13, 15};
 
 //===================================
-int ID = 0;
+int ID = 14;
 //===================================
 const char *ssid = "ois";
 const char *password = "ilovestudy";
 //===================================
-String serverAddress = "192.168.1.4:5000";
+String serverAddress = "192.168.1.4:8000";
 //===================================
 
 // MARK : Wifi
@@ -14,11 +14,6 @@ String serverAddress = "192.168.1.4:5000";
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 ESP8266WebServer server(80);
-<<<<<<< HEAD
-const char *ssid = "iot2";
-const char *password = "12345678";
-=======
->>>>>>> d6397907d14129659d63cb5c5627f91c99ce0450
 #include <ESP8266HTTPClient.h>
 
 // MARK : OTA
@@ -70,6 +65,8 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   // MARK : OTA
+//  String myhostname = "SCiUS";
+//  char *mystr = "SCiUS"+ID;
   ArduinoOTA.setHostname("SCiUS");
   ArduinoOTA.onStart([]() {
     String type;
@@ -108,14 +105,8 @@ void loop() {
   }
   
   Serial.println("[HTTP] Request...");
-
-<<<<<<< HEAD
-  String url = "http://192.168.137.1:5000/?temp="+String(temp)+"&humi="+String(humi);
-=======
-  //String url = "http://192.168.1.3:5000/?temp="+String(temp)+"&humi="+String(humi);
+//  String url = "http://192.168.137.1:5000/?temp="+String(temp)+"&humi="+String(humi);
   String url = "http://" + serverAddress + "/getcmd/" + String(ID) + "/" + String(temp) + "/" + String(humi) + "/";
->>>>>>> d6397907d14129659d63cb5c5627f91c99ce0450
-
   HTTPClient http;
   http.begin(url);
   int httpCode = http.GET();

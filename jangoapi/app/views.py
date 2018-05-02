@@ -9,15 +9,18 @@ import cv2
 from app.bot import Master
 
 BOT_IDS = [14, 32]
+BOT_IDS = [i for i in range(20)]
 BOT_IDS = [str(x) for x in BOT_IDS]
 BOT_SECRET = {str(k): str(k) for k in BOT_IDS}
 
 STOP_IDX = 0
-TURN_TIME = 0.3
-STOP_TIME = 0.5
+TURN_TIME = 0.5
+STOP_TIME = 1
 INSTRUCTION_IDX = 1
 
 current_idx = 0
+# cap = cv2.VideoCapture(0)
+cap = None
 buffer = [{str(k): '0'*27 for k in BOT_IDS}, {str(k): '0'*27 for k in BOT_IDS}]
 
 class Synchronizer(Thread):
@@ -27,6 +30,7 @@ class Synchronizer(Thread):
         self.is_sleep = is_sleep
 
     def run(self):
+        self.currentidx = INSTRUCTION_IDX
         while True:
             if self.is_sleep:
                 self.currentidx = (self.currentidx + 1) % 2
@@ -35,7 +39,7 @@ class Synchronizer(Thread):
                 else:
                     sleep(STOP_TIME)
             else:
-                self.currentidx = INSTRUCTION_IDX
+                pass
 
 sync = Synchronizer(is_sleep=False)
 sync.start()
@@ -53,7 +57,6 @@ def get_init_status(idx):
 
 status = {k: get_init_status(k) for k in BOT_IDS}
 
-cap = cv2.VideoCapture(1)
 master = Master(bot_ids=BOT_IDS, cap=cap)
 
 

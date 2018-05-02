@@ -27,8 +27,6 @@ with open('testindex.json', 'r') as fp:
 class Master:
     class __Master(threading.Thread):
         def __init__(self, bot_ids=None, cap=None):
-            if cap is None:
-                cap = cv2.VideoCapture(1)
             self.cap = cap
             self.bots = None
             self.currentidx = 0
@@ -62,6 +60,13 @@ class Master:
             self.infos = self.infos
 
         def run(self):
+            if self.cap:
+                self.dojob()
+            else:
+                context = {str(k): self.get_init_status(k) for k in self.bot_ids}
+                self.infos[self.currentidx] = context
+
+        def dojob(self):
             while True:
                 # sleep(3)
                 start = time()

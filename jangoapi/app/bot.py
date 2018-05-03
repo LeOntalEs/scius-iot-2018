@@ -12,7 +12,7 @@ BOT_REDIUS = 20
 # ALL_COLORS = [0, 3698, 4232, 6050, 11250, 25312] + [DIR_COLOR]
 DIR_COLOR = 0
 # ALL_COLORS = [60, 130, 200, 300] + [DIR_COLOR]
-ALL_COLORS = [30, 65, 105, 160] + [DIR_COLOR]
+ALL_COLORS = [30, 70, 110, 175] + [DIR_COLOR]
 MISSING_OFFSET = 10
 
 COLOR_OFFSET = 50
@@ -80,7 +80,8 @@ class Master:
                     gimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     # 20
                     circles = cv2.HoughCircles(gimg, cv2.HOUGH_GRADIENT, 1, 20,
-                                               param1=40, param2=25, minRadius=2, maxRadius=50)[0]
+                                               param1=75, param2=20, minRadius=2, maxRadius=35)[0]
+                                            #    param1=40, param2=25, minRadius=2, maxRadius=50)[0]
                     for i in circles:
                         cv2.circle(timg, (i[0], i[1]), i[2], (255, 255, 0), 2)
                         cv2.circle(timg, (i[0], i[1]), 2, (255, 255, 0), 2, 3)
@@ -159,13 +160,17 @@ class Master:
                             element['x'] = latest['x']
                         if (element['y'] is None) and (not latest['y'] is None):
                             element['y'] = latest['y']
+
+                    context.pop(None, None)
+
                     self.latest_state = context
                     self.infos[self.currentidx] = context
 
-                    for info in sorted(self.infos[self.currentidx],key=lambda x: int(x)):
-                        val = self.infos[self.currentidx][info]
-                        print(val['id'], val['x'], val['y'], val['theta'])
-                    print()
+                    if self.infos[self.currentidx]:
+                        for info in sorted(self.infos[self.currentidx],key=lambda x: int(x)):
+                            val = self.infos[self.currentidx][info]
+                            print(val['id'], val['x'], val['y'], val['theta'])
+                        print()
 
                     self.currentidx = (self.currentidx+1) % self.max_alloc
                     self.bots = bots
@@ -176,7 +181,7 @@ class Master:
                     pass
                     # print('from Master Error: ', err, type(err))
                     print(traceback.format_exc())
-
+                    print(self.infos[self.currentidx])
     instance = None
 
     def __init__(self, bot_ids=None, cap=None):
@@ -216,6 +221,7 @@ class Bot:
         self.find_direction()
 
     def normalize_color(self, color):
+        norm_color = self.norm_color(color)
         # print(color)
         # print(norm_color)
         # for c in ALL_COLORS:
@@ -223,7 +229,6 @@ class Bot:
         #         print(norm_color, c, abs(norm_color-c))
         #         return c
         # return None
-        norm_color = self.norm_color(color)
         d = [(abs(norm_color-c), c) for c in ALL_COLORS]
         return min(d, key=lambda x: x[0])[1]
 

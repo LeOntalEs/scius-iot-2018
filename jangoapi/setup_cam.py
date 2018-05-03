@@ -88,7 +88,7 @@ def get_all_color(cap):
 if __name__ == '__main__':
     cap = None
     try:
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(0)
         #
         # 1. Run this to get all centriod color
         #       then, set to ALL COLOR

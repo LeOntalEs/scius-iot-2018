@@ -82,25 +82,26 @@ def get_all_color(cap):
 if  __name__ == '__main__':
     cap = None
     try:
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(0)
         # 
         # 1. Run this to get all centriod color 
         #       then, set to ALL COLOR 
         # 
-        codes, colors = get_all_color(cap)
-        for z in zip(codes, colors):
-            print(z)
-        print(sorted(codes))
-        codes = ALL_COLORS
-        codes = [30, 65, 105, 160]
+        # codes, colors = get_all_color(cap)
+        # for z in zip(codes, colors):
+        #     print(z)
+        # print(sorted(codes))
+        # codes = ALL_COLORS
+        # codes = [30, 65, 105, 160]
         # [4, 64, 107, 110, 166]
+        codes = [30, 70, 110, 175]
 
         # 
         # 2. generate cindex.json
         # 
-        # k, idxs = combi(codes)
-        # with open('testindex.json', 'w+') as fp:
-        #     json.dump(k, fp, indent=2)
+        k, idxs = combi(codes)
+        with open('testindex.json', 'w+') as fp:
+            json.dump(k, fp, indent=2)
     finally:
         cv2.destroyAllWindows()
         if cap:

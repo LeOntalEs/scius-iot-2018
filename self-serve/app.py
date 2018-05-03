@@ -27,27 +27,27 @@ own_status = {
 INSTRUCTION_IDX = 1
 buffer = ['0'*27, '0'*27]
 
-class Synchronizer(Thread):
-    def __init__(self, is_sleep, *args, **kwargs):
-        super(Synchronizer, self).__init__(*args, **kwargs)
-        self.current_idx = 0
-        self.is_sleep = is_sleep
+# class Synchronizer(Thread):
+#     def __init__(self, is_sleep, *args, **kwargs):
+#         super(Synchronizer, self).__init__(*args, **kwargs)
+#         self.current_idx = 0
+#         self.is_sleep = is_sleep
 
-    def run(self):
-        while True:
-            self.current_idx = INSTRUCTION_IDX
-            if self.is_sleep:
-                if self.current_idx == INSTRUCTION_IDX:
-                    sleep(TURN_TIME)
-                else:
-                    sleep(STOP_TIME)
-                self.current_idx = (self.current_idx + 1) % 2
-            else:
-                pass
+#     def run(self):
+#         while True:
+#             self.current_idx = INSTRUCTION_IDX
+#             if self.is_sleep:
+#                 if self.current_idx == INSTRUCTION_IDX:
+#                     sleep(TURN_TIME)
+#                 else:
+#                     sleep(STOP_TIME)
+#                 self.current_idx = (self.current_idx + 1) % 2
+#             else:
+#                 pass
 
 
-sync = Synchronizer(is_sleep=IS_SLEEP)
-sync.start()
+# sync = Synchronizer(is_sleep=IS_SLEEP)
+# sync.start()
 
 
 def request_gateway_status():
@@ -104,5 +104,5 @@ def getstatus():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', threaded=True)
+    app.run(host='0.0.0.0')
     # app.run(host='0.0.0.0')

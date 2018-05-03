@@ -16,7 +16,7 @@ ID = '5'
 secret = '1234'
 #####################
 # MARK : Server Service
-locationHostIP = "192.168.1.25:5000"
+locationHostIP = "localhost:5000"
 
 isPrintAction = True
 

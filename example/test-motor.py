@@ -1,6 +1,7 @@
 from time import sleep
 import library as car
 
+car.offsensor()
 try:
     while True:
         car.motor(999, 999)

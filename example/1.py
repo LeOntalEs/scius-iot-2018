@@ -1,15 +1,21 @@
 from time import sleep
 import library as car
 
+import keyboard
+
 try:
-    threshold = 70
-    car.onsensor()
+    car.offsensor()
     while True:
-        car.update()
-        humi = int(car.humi())
-        if humi > threshold:
-            car.led(150, 0, 0)
+        if keyboard.is_pressed('w'):
+            car.motor(999,999)
+        elif keyboard.is_pressed('s'):
+            car.motor(-999,-999)
+        elif keyboard.is_pressed('a'):
+            car.motor(-999,999)
+        elif keyboard.is_pressed('d'):
+            car.motor(999,-999)
         else:
-            car.led(0, 0, 150)
+            car.motor(0,0)
+        sleep(0.2)
 finally:
     car.reset()

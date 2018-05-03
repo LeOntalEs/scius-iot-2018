@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+	
+
+	<style type="text/css">
+		input[type="range"]{
+			width: 100%;
+		}
+		.btn{ width: 100%; }
+		.col-lg-12{ margin-bottom: 10px; }
+		.preview{ border-radius: 6px; height: 100%; border-style: solid; border-width: 1px; border-color: #d1d1d1; }
+	</style>
+</head>
+
+<body>
+
+	<div class="container">
+		<h1>IOT Car Controller</h1>
+
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">Movement - Button</div>
+					<div class="card-body">
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(999,0,999,0);" onmouseup="Action(0,0,0,0);" ontouchstart="Action(999,0,999,0);" ontouchend="Action(0,0,0,0);">Forward</button></div>
+							<div class="col-sm-4"></div>
+						</div>
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,500,500,0);" onmouseup="Action(0,0,0,0)" ontouchstart="Action(0,500,500,0);" ontouchend="Action(0,0,0,0);">Left</button></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,0,0,0);" onmouseup="Action(0,0,0,0)" ontouchstart="Action(0,0,0,0);" ontouchend="Action(0,0,0,0);">Stop</button></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(500,0,0,500);" onmouseup="Action(0,0,0,0)" ontouchstart="Action(500,0,0,500);" ontouchend="Action(0,0,0,0);">Right</button></div>
+						</div>
+						<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,999,0,999);" onmouseup="Action(0,0,0,0);" ontouchstart="Action(0,999,0,999);" ontouchend="Action(0,0,0,0);">Backward</button></div>
+							<div class="col-sm-4"></div>
+						</div>
+					</div> 
+				</div>
+			</div>
+
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">Movement - Manual</div>
+					<div class="card-body">
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-2">Forward</div>
+							<div class="col-sm-8"><input type="range" min="0" max="999" value="0" id="ledR" oninput="Action(0,this.value,0,this.value); document.getElementById('forwardm').innerHTML = this.value; "></div>
+							<div class="col-sm-2"><p id="forwardm">0</p></div>
+						</div>
+					</div> 
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-header">Movement - Gyro</div>
+					<div class="card-body">
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-sm-4"><button class="btn btn-secondary" style="height: 80px;" id="gyroswitch" ontouchstart="gyroEnable = !gyroEnable; this.innerHTML = (gyroEnable ? 'Enable':'Disable')">Disable</button></div>
+							<div class="col-sm-8"><p id="motion" style="line-height: 80px;">Not Support</p></div>
+						</div>
+					</div> 
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+</body>
+
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script type="text/javascript">
+	var socket =io();
+	var Motor = [0,0,0,0]
+
+	function Action(m0,m1,m2,m3){
+		if(m0 > 800) m0 = 800;
+		if(m1 > 800) m1 = 800;
+		if(m2 > 800) m2 = 800;
+		if(m3 > 800) m3 = 800;
+		Motor[0] = m0
+		Motor[1] = m1
+		Motor[2] = m2
+		Motor[3] = m3		
+		send()
+       	ledUpdateLabel()
+	}
+	function send(){
+		let output = 
+       		String(Motor[0])+','+
+       		String(Motor[1])+','+
+       		String(Motor[2])+','+
+       		String(Motor[3]);
+       	socket.emit('updates', output);
+       	console.log(output);
+	}
+
+
+	var gyroEnable = false
+	window.addEventListener("deviceorientation", handleMotion, true);
+	function handleMotion(){
+		// if(gyroEnable){
+			var A = event.beta
+			var B = event.gamma
+
+			document.getElementById('motion').innerHTML = String(A.toFixed(2))+" | "+String(B.toFixed(2))
+			// if(B > 0 && B < 60) Action(0,999,0,999)//Action(0,500+(90-parseInt(B))*(400/90),0,500+(90-parseInt(B))*(400/90));//Action(0,400+(90-B)*(400/90),0,400+(90-B)*(400/90));
+			// else if(B < 0 && B > -70) Action(999,0,999,0);
+			// else if(A > 40) Action(0,999,999,0);
+			// //else if(A < -40) Action(999,0,0,999);
+			// else Action(0,0,0,0);
+		// }
+	}
+
+	socket.on('status', function(msg){
+		var obj = JSON.parse(msg);
+		document.getElementById('temp').innerHTML = obj['temp'] + " °c"
+		document.getElementById('humi').innerHTML = obj['humi'] + " %"
+		document.getElementById("ledR").value = obj['led']['r']
+		document.getElementById("ledG").value = obj['led']['g']
+		document.getElementById("ledB").value = obj['led']['b']
+		document.getElementById("melodynow").innerHTML = obj['sound']['melodykey']
+
+		var now =  new Date()
+		document.getElementById("date").innerHTML = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds()+"."+now.getMilliseconds()
+		hzcounter += 1;
+    });
+
+	// var hzcounter = 0;
+ //    var time = setInterval(function(){
+ //            document.getElementById('hz').innerHTML = hzcounter+" Hz"; 
+ //            hzcounter = 0;
+ //        },1000);
+
+
+
+</script>
+
+</html>

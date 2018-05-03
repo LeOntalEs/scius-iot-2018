@@ -3,10 +3,10 @@ int pin[] = {16, 5, 4, 0, 2, 14, 12, 13, 15};
 //===================================
 int ID = 15;
 //===================================
-const char *ssid = "15";
-const char *password = "12345678";
+const char *ssid = "SCiUS-IOT2";
+const char *password = "";
 //===================================
-String serverAddress = "192.168.137.1:5000";
+String serverAddress = "192.168.1.25:5000";
 //===================================
 
 // MARK : Wifi

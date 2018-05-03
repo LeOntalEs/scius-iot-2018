@@ -16,7 +16,7 @@ ID = '5'
 secret = '1234'
 #####################
 # MARK : Server Service
-locationHostIP = "192.168.1.11:5000"
+locationHostIP = "192.168.1.25:5000"
 
 isPrintAction = True
 
@@ -37,7 +37,7 @@ Data = {'isEnable': True,
 # minSpeed = 600
 # maxSpeed = 999
 minSpeed = 800
-maxSpeed = 800
+maxSpeed = 999
 
 dhtEnable = False
 

@@ -34,8 +34,8 @@ class Master:
             self.nbots = len(bot_ids)
             self.bot_ids = bot_ids
             self.latest_state = {
-                x: self.get_init_status(x) for x in self.bot_ids}
-            self.missing = {x: 0 for x in self.bot_ids}
+                str(x): self.get_init_status(x) for x in self.bot_ids}
+            self.missing = {str(x): 0 for x in self.bot_ids}
             self.infos = [None for _ in range(self.max_alloc)]
             threading.Thread.__init__(self)
 
@@ -111,8 +111,8 @@ class Master:
                     bots = [bot for bot in bots if acceptable(bot)]
 
                     ubots = list()
-                    unknown = set(self.bot_ids[:])
-                    context = {x: self.get_init_status(
+                    unknown = set(str(x) for x in self.bot_ids)
+                    context = {str(x): self.get_init_status(
                         x) for x in self.bot_ids}
                     for bot in bots:
                         bot.process()
@@ -135,7 +135,7 @@ class Master:
 
                     nubt = len(ubots)
                     nukw = len(unknown)
-                    lst = list(unknown)
+                    lst = [str(x) for x in list(unknown)]
                     if unknown:
                         if nukw == 1:
                             if nubt == 1:
@@ -148,7 +148,6 @@ class Master:
                         else:
                             for idx in lst:
                                 context[idx] = self.latest_state[idx]
-
                     for bot in bots:
                         if not bot.id:
                             continue
@@ -163,7 +162,7 @@ class Master:
                     self.latest_state = context
                     self.infos[self.currentidx] = context
 
-                    for info in self.infos[self.currentidx]:
+                    for info in sorted(self.infos[self.currentidx],key=lambda x: int(x)):
                         val = self.infos[self.currentidx][info]
                         print(val['id'], val['x'], val['y'], val['theta'])
                     print()
@@ -176,7 +175,7 @@ class Master:
                 except Exception as err:
                     pass
                     # print('from Master Error: ', err, type(err))
-                    # print(traceback.format_exc())
+                    print(traceback.format_exc())
 
     instance = None
 
@@ -238,6 +237,7 @@ class Bot:
     def identify(self):
         try:
             self.id = str(colormap[str(tuple(c[-1] for c in self.id_codes))])
+            print('IN BOT ID: ', self.id)
         except KeyError:
             self.id = None
 
@@ -249,6 +249,7 @@ class Bot:
                 np.arctan2(vx[0], vx[1])+np.pi) - 90) % 360
             if self.direction is None:
                 self.direction = -1
+            print('IN BOT DIRECTION: ', self.direction)
 
     def add_code(self, x, y, r, c):
         nc = self.normalize_color(c)

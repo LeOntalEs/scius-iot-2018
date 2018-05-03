@@ -7,16 +7,17 @@ from bot import Master
 # app = Flask(__name__)
 cap = None
 try:
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     currnet_index = 0
     bot_ids = [14, 32]
     master = Master(bot_ids, cap)
-    master.start()
+    # master.start()
     while True:
         bots = master.bots
         # print(bots)
         start = time()
         infos = master.get_info()
+        print(infos)
         if infos:
             for info in infos:
                 val = infos[info]

@@ -9,7 +9,7 @@ import cv2
 from app.bot import Master
 
 BOT_IDS = [14, 32]
-BOT_IDS = [i for i in range(20)]
+# BOT_IDS = [i for i in range(40)]
 BOT_IDS = [str(x) for x in BOT_IDS]
 BOT_SECRET = {str(k): str(k) for k in BOT_IDS}
 
@@ -19,8 +19,8 @@ STOP_TIME = 1
 INSTRUCTION_IDX = 1
 
 current_idx = 0
-# cap = cv2.VideoCapture(0)
-cap = None
+cap = cv2.VideoCapture(0)
+# cap = None
 buffer = [{str(k): '0'*27 for k in BOT_IDS}, {str(k): '0'*27 for k in BOT_IDS}]
 
 class Synchronizer(Thread):
@@ -59,7 +59,6 @@ status = {k: get_init_status(k) for k in BOT_IDS}
 
 master = Master(bot_ids=BOT_IDS, cap=cap)
 
-
 def bad_authen(idx, secret):
     if idx in BOT_SECRET and BOT_SECRET[idx] == secret:
         return True
@@ -93,6 +92,8 @@ def int_or_none(val):
         return int(val)
     else:
         return int(val)
+
+        
 def getstatus(request):
     infos = master.get_info()
     for k, v in infos.items():

@@ -8,8 +8,8 @@ from django.http import HttpResponse, JsonResponse
 import cv2
 from app.bot import Master
 
-BOT_IDS = [5, 7]
-# BOT_IDS = [i for i in range(40)]
+BOT_IDS = [5, 7, 4]
+BOT_IDS = [i for i in range(40)]
 BOT_IDS = [str(x) for x in BOT_IDS]
 BOT_SECRET = {str(k): str(k) for k in BOT_IDS}
 

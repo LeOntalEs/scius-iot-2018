@@ -8,9 +8,9 @@ from flask_socketio import SocketIO, send, emit
 
 BOT_IDX = 0
 IS_SLEEP = False
-NEED_OTHER_STATUS = False
+NEED_OTHER_STATUS = True
 
-GATEWAY_ADDR = '192.168.1.99:8000'
+GATEWAY_ADDR = 'localhost:8000'
 STOP_IDX = 0
 STOP_TIME = 1
 TURN_TIME = 0.5
@@ -98,11 +98,13 @@ def getcmd(idx=None, temp=None, humi=None):
 def getstatus():
     if NEED_OTHER_STATUS:
         geather_status = request_gateway_status()
+        print('gether', geather_status, type(geather_status))
         if geather_status:
-            pass
-        return None
-    else:
-        return json.dumps({own_status['id']: own_status})
+            data = json.loads(geather_status)
+            if not own_status['id'] in data:
+                data[own_status['id']] = own_status
+            return json.dumps(data)
+    return json.dumps({own_status['id']: own_status})
 
 @app.route('/control')
 def control():

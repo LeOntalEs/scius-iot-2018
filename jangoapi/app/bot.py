@@ -180,8 +180,8 @@ class Master:
                 except Exception as err:
                     pass
                     # print('from Master Error: ', err, type(err))
-                    print(traceback.format_exc())
-                    print(self.infos[self.currentidx])
+                    # print(traceback.format_exc())
+                    # print(self.infos[self.currentidx])
     instance = None
 
     def __init__(self, bot_ids=None, cap=None):

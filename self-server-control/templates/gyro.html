@@ -29,9 +29,9 @@
 <body style="position: fixed;">
 	<button class="btn btn-secondary" style="height: 15vmin; width: 100vw; position: block; font-size: 6vmin" id="gyroswitch" ontouchstart="gyroEnable = !gyroEnable; this.innerHTML = (gyroEnable ? 'Enable':'Disable')">Disable</button>
 	<div class="row">
-		<div class="col-sm-4"><p id="motion">Not Support</p></div>
-		<div class="col-sm-4"><p id="out">Not Support</p></div>
-		<div class="col-sm-4"><p id="motor">Not Support</p></div>
+		<div class="col-sm-4"><p id="motion">Disable</p></div>
+		<div class="col-sm-4"><p id="out"	>Disable</p></div>
+		<div class="col-sm-4"><p id="motor"	>Disable</p></div>
 	</div>
 
 </body>
@@ -45,8 +45,7 @@
 	var socket =io();
 	var Motor = [0,0,0,0]
 
-	var svg = d3.select("body").append("svg").style('position','absolute').style('background-color','#eee').style('width','500px').style('height','500px')
-
+	var svg = d3.select("body").append("svg").style('position','absolute').style('background-color','#eee').style('width','500px').style('height','500px').style("left","calc( ( 100% - 500px ) / 2)")
 	var c1 = svg.append('circle').attr('r',50).attr('cy',250).attr('cx',250).attr('fill','#ccc')
 
 	var circle = svg.append('circle').attr('r',20).attr('cy',250).attr('cx',250)
@@ -62,7 +61,6 @@
 		Motor[2] = m2
 		Motor[3] = m3		
 		send()
-       	ledUpdateLabel()
 	}
 	function send(){
 		let output = 
@@ -82,53 +80,78 @@
 			var A = event.beta
 			var B = event.gamma
 
-			document.getElementById('motion').innerHTML = "Beta:"+String(A.toFixed(2))+" Gamma:"+String(B.toFixed(2))
-			// if(B > 0 && B < 60) Action(0,999,0,999)//Action(0,500+(90-parseInt(B))*(400/90),0,500+(90-parseInt(B))*(400/90));//Action(0,400+(90-B)*(400/90),0,400+(90-B)*(400/90));
-			// else if(B < 0 && B > -70) Action(999,0,999,0);
-			// else if(A > 40) Action(0,999,999,0);
-			// //else if(A < -40) Action(999,0,0,999);
-			// else Action(0,0,0,0);
+			document.getElementById('motion').innerHTML = "A:"+String(A.toFixed(2))+" B:"+String(B.toFixed(2))
 
 			circle.attr('cy',250+(A/90*250)).attr('cx',250+(B/90*250))
 
 			var seftZone = 20
 
+			var MaxSpeed = 0
+			var LSpeed = 0
+			var RSpeed = 0
+
 			if(B > seftZone){
 				document.getElementById('out').innerHTML = "forward"
+				MaxSpeed = 400 + (B/90)*500
 			}else if(B < -seftZone){
 				document.getElementById('out').innerHTML = "backward"
-			}else if(A > seftZone){
-				document.getElementById('out').innerHTML = "right"
-			}else if(A < -seftZone){
-				document.getElementById('out').innerHTML = "left"
+				MaxSpeed = -400 + (B/90)*500
 			}else{
 				document.getElementById('out').innerHTML = "Stop"
+				MaxSpeed = 0
 			}
 
-			document.getElementById('motor').innerHTML = (500*(A/90)).toFixed(2)
+			if(A > seftZone){
+				document.getElementById('out').innerHTML = "right"
+				LSpeed = MaxSpeed
+				RSpeed = MaxSpeed - Math.abs(A/90*500)
+				if(MaxSpeed == 0) RSpeed -= 500
+			}else if(A < -seftZone){
+				document.getElementById('out').innerHTML = "left"
+				LSpeed = MaxSpeed - Math.abs(A/90*500)
+				RSpeed = MaxSpeed
+				if(MaxSpeed == 0) LSpeed -= 500
+			}else{
+				LSpeed = MaxSpeed
+				RSpeed = MaxSpeed
+			}
+
+			Motor = [0,0,0,0]
+			if(LSpeed < 0){
+				Motor[0] = 0
+				Motor[1] = Math.abs(LSpeed)
+			}else{
+				Motor[0] = Math.abs(LSpeed)
+				Motor[1] = 0
+			}
+			if(RSpeed < 0){
+				Motor[2] = 0
+				Motor[3] = Math.abs(RSpeed)
+			}else{
+				Motor[2] = Math.abs(RSpeed)
+				Motor[3] = 0
+			}
+			document.getElementById('motor').innerHTML = (LSpeed).toFixed(2) + " L | R " + (RSpeed).toFixed(2)
+			
 
 		}
 	}
 
-	socket.on('status', function(msg){
-		var obj = JSON.parse(msg);
-		document.getElementById('temp').innerHTML = obj['temp'] + " °c"
-		document.getElementById('humi').innerHTML = obj['humi'] + " %"
-		document.getElementById("ledR").value = obj['led']['r']
-		document.getElementById("ledG").value = obj['led']['g']
-		document.getElementById("ledB").value = obj['led']['b']
-		document.getElementById("melodynow").innerHTML = obj['sound']['melodykey']
-
-		var now =  new Date()
-		document.getElementById("date").innerHTML = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds()+"."+now.getMilliseconds()
-		hzcounter += 1;
-    });
-
 	// var hzcounter = 0;
- //    var time = setInterval(function(){
- //            document.getElementById('hz').innerHTML = hzcounter+" Hz"; 
- //            hzcounter = 0;
- //        },1000);
+    var time = setInterval(function(){
+    	if(gyroEnable){
+			if(Motor[0] > 800) Motor[0] = 800;
+			if(Motor[1] > 800) Motor[1] = 800;
+			if(Motor[2] > 800) Motor[2] = 800;
+			if(Motor[3] > 800) Motor[3] = 800;
+			let output = 	parseInt(Motor[0]) + "," + 
+							parseInt(Motor[1]) + "," +
+							parseInt(Motor[2]) + "," +
+							parseInt(Motor[3])
+			// document.getElementById('motor').innerHTML = output
+       		socket.emit('updates', output);
+       	}
+    },100);
 
 
 

@@ -11,24 +11,12 @@
 	
 
 	<style type="text/css">
-		input[type="range"]{
-			width: 100%;
-		}
-		.btn{ width: 100%; }
-		.col-lg-12{ margin-bottom: 10px; }
-		.preview{ border-radius: 6px; height: 100%; border-style: solid; border-width: 1px; border-color: #d1d1d1; }
+		.btn{ width: 100%; height: 20vh; font-size: 6vmin; }
 	</style>
 </head>
 
 <body>
 
-	<div class="container">
-		<h1>IOT Car Controller</h1>
-
-			<div class="col-lg-12">
-				<div class="card">
-					<div class="card-header">Movement - Button</div>
-					<div class="card-body">
 						<div class="row" style="margin-top: 10px;">
 							<div class="col-sm-4"></div>
 							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(999,0,999,0);" onmouseup="Action(0,0,0,0);" ontouchstart="Action(999,0,999,0);" ontouchend="Action(0,0,0,0);">Forward</button></div>
@@ -44,36 +32,6 @@
 							<div class="col-sm-4"><button class="btn btn-secondary" onmousedown="Action(0,999,0,999);" onmouseup="Action(0,0,0,0);" ontouchstart="Action(0,999,0,999);" ontouchend="Action(0,0,0,0);">Backward</button></div>
 							<div class="col-sm-4"></div>
 						</div>
-					</div> 
-				</div>
-			</div>
-
-			<div class="col-lg-12">
-				<div class="card">
-					<div class="card-header">Movement - Manual</div>
-					<div class="card-body">
-						<div class="row" style="margin-top: 10px;">
-							<div class="col-sm-2">Forward</div>
-							<div class="col-sm-8"><input type="range" min="0" max="999" value="0" id="ledR" oninput="Action(0,this.value,0,this.value); document.getElementById('forwardm').innerHTML = this.value; "></div>
-							<div class="col-sm-2"><p id="forwardm">0</p></div>
-						</div>
-					</div> 
-				</div>
-			</div>
-			<div class="col-lg-12">
-				<div class="card">
-					<div class="card-header">Movement - Gyro</div>
-					<div class="card-body">
-						<div class="row" style="margin-top: 10px;">
-							<div class="col-sm-4"><button class="btn btn-secondary" style="height: 80px;" id="gyroswitch" ontouchstart="gyroEnable = !gyroEnable; this.innerHTML = (gyroEnable ? 'Enable':'Disable')">Disable</button></div>
-							<div class="col-sm-8"><p id="motion" style="line-height: 80px;">Not Support</p></div>
-						</div>
-					</div> 
-				</div>
-			</div>
-			
-		</div>
-	</div>
 
 </body>
 
@@ -93,7 +51,6 @@
 		Motor[2] = m2
 		Motor[3] = m3		
 		send()
-       	ledUpdateLabel()
 	}
 	function send(){
 		let output = 
@@ -106,35 +63,6 @@
 	}
 
 
-	var gyroEnable = false
-	window.addEventListener("deviceorientation", handleMotion, true);
-	function handleMotion(){
-		// if(gyroEnable){
-			var A = event.beta
-			var B = event.gamma
-
-			document.getElementById('motion').innerHTML = String(A.toFixed(2))+" | "+String(B.toFixed(2))
-			// if(B > 0 && B < 60) Action(0,999,0,999)//Action(0,500+(90-parseInt(B))*(400/90),0,500+(90-parseInt(B))*(400/90));//Action(0,400+(90-B)*(400/90),0,400+(90-B)*(400/90));
-			// else if(B < 0 && B > -70) Action(999,0,999,0);
-			// else if(A > 40) Action(0,999,999,0);
-			// //else if(A < -40) Action(999,0,0,999);
-			// else Action(0,0,0,0);
-		// }
-	}
-
-	socket.on('status', function(msg){
-		var obj = JSON.parse(msg);
-		document.getElementById('temp').innerHTML = obj['temp'] + " °c"
-		document.getElementById('humi').innerHTML = obj['humi'] + " %"
-		document.getElementById("ledR").value = obj['led']['r']
-		document.getElementById("ledG").value = obj['led']['g']
-		document.getElementById("ledB").value = obj['led']['b']
-		document.getElementById("melodynow").innerHTML = obj['sound']['melodykey']
-
-		var now =  new Date()
-		document.getElementById("date").innerHTML = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds()+"."+now.getMilliseconds()
-		hzcounter += 1;
-    });
 
 	// var hzcounter = 0;
  //    var time = setInterval(function(){
